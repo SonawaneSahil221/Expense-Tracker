@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ExpenseIQ — Track, analyze, and manage your daily expenses with a modern fintech SaaS dashboard." />
+  <title>ExpenseIQ — Premium Expense Tracker</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <link rel="stylesheet" href="Style.css?v=5" />
+</head>
+
+<body>
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loader-ring">
+      <div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- Navigation Sidebar -->
+  <nav id="app-sidebar" class="app-sidebar" aria-label="Main navigation" aria-hidden="true">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">?</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name" id="sidebar-user-name">User</span>
+          <span class="sidebar-user-email" id="sidebar-user-email">user@email.com</span>
+        </div>
+      </div>
+      <button class="btn-icon sidebar-close-btn" id="sidebar-close-btn" type="button" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="#/home" class="sidebar-link" data-page="home"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="#/audit" class="sidebar-link" data-page="audit"><i class="fa-solid fa-clock-rotate-left"></i> Audit Log</a></li>
+      <li><a href="#/profile" class="sidebar-link" data-page="profile"><i class="fa-solid fa-user"></i> Profile</a></li>
+      <li class="sidebar-nav-divider"></li>
+      <li><button type="button" class="sidebar-link sidebar-link--logout" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button></li>
+    </ul>
+  </nav>
+
+  <!-- ===== LOGIN VIEW ===== -->
+  <div id="view-login" class="app-view">
+    <div class="auth-page">
+      <aside class="auth-hero" aria-hidden="true">
+        <div class="auth-hero__glow auth-hero__glow--one"></div>
+        <div class="auth-hero__glow auth-hero__glow--two"></div>
+        <div class="auth-hero__glow auth-hero__glow--three"></div>
+        <div class="auth-hero__content">
+          <div class="auth-hero__brand">
+            <div class="logo-icon logo-icon--lg"><i class="fa-solid fa-bolt"></i></div>
+            <div>
+              <h1 class="auth-hero__title">ExpenseIQ</h1>
+              <p class="auth-hero__subtitle">Premium expense intelligence</p>
+            </div>
+          </div>
+
+          <!-- Mini dashboard mockup -->
+          <div class="hero-mockup">
+            <div class="mockup-card">
+              <div class="mockup-top-row">
+                <span class="mockup-label">Monthly Spending</span>
+                <span class="mockup-badge mockup-badge--green"><i class="fa-solid fa-arrow-trend-down"></i> -12%</span>
+              </div>
+              <div class="mockup-amount">₹24,580</div>
+              <div class="mockup-bars">
+                <div class="mockup-bar" style="--h:55%"></div>
+                <div class="mockup-bar" style="--h:38%"></div>
+                <div class="mockup-bar" style="--h:70%"></div>
+                <div class="mockup-bar" style="--h:48%"></div>
+                <div class="mockup-bar mockup-bar--active" style="--h:88%"></div>
+                <div class="mockup-bar" style="--h:62%"></div>
+                <div class="mockup-bar" style="--h:42%"></div>
+              </div>
+              <div class="mockup-rows">
+                <div class="mockup-row">
+                  <span class="mockup-dot" style="background:#0070F3"></span>
+                  <span class="mockup-row-name">Food &amp; Dining</span>
+                  <span class="mockup-row-amt">₹8,200</span>
+                </div>
+                <div class="mockup-row">
+                  <span class="mockup-dot" style="background:#7928CA"></span>
+                  <span class="mockup-row-name">Transport</span>
+                  <span class="mockup-row-amt">₹3,500</span>
+                </div>
+                <div class="mockup-row">
+                  <span class="mockup-dot" style="background:#F5A623"></span>
+                  <span class="mockup-row-name">Shopping</span>
+                  <span class="mockup-row-amt">₹5,900</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ul class="auth-hero__features">
+            <li><i class="fa-solid fa-chart-line"></i><span>Real-time spending insights</span></li>
+            <li><i class="fa-solid fa-shield-halved"></i><span>Secure accounts &amp; audit trail</span></li>
+            <li><i class="fa-solid fa-wallet"></i><span>Smart budget tracking</span></li>
+          </ul>
+
+          <div class="auth-hero__stats">
+            <div class="hero-stat">
+              <span class="hero-stat__val">50K+</span>
+              <span class="hero-stat__lbl">Users</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat__val">₹2Cr+</span>
+              <span class="hero-stat__lbl">Tracked</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat__val">4.9★</span>
+              <span class="hero-stat__lbl">Rating</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="auth-panel">
+        <button type="button" class="btn-icon auth-theme-btn" id="auth-theme-toggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <div class="auth-container">
+          <div class="auth-card">
+            <div class="auth-card__mobile-brand">
+              <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
+              <span>ExpenseIQ</span>
+            </div>
+
+            <div class="auth-card__header">
+              <h2 class="auth-card__title" id="auth-card-title">Welcome back</h2>
+              <p class="auth-card__subtitle" id="auth-card-subtitle">Sign in to continue to your dashboard</p>
+            </div>
+
+            <!-- Google Sign-In -->
+            <div class="google-signin-section" id="google-signin-section" hidden>
+              <div id="google-signin-btn"></div>
+            </div>
+            <div class="auth-divider" id="auth-divider" hidden>
+              <span>or continue with email</span>
+            </div>
+
+            <div class="auth-tabs" role="tablist" aria-label="Authentication">
+              <button type="button" class="auth-tab auth-tab--active" id="auth-tab-login" data-tab="login" role="tab" aria-selected="true">Sign In</button>
+              <button type="button" class="auth-tab" id="auth-tab-register" data-tab="register" role="tab" aria-selected="false">Create Account</button>
+            </div>
+
+            <form id="login-form" class="auth-form" role="tabpanel">
+              <div class="input-group input-group--icon">
+                <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
+                <input type="email" id="login-email" class="form-input form-input--icon" placeholder="Email address" required autocomplete="email" />
+              </div>
+              <div class="input-group input-group--icon">
+                <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+                <input type="password" id="login-password" class="form-input form-input--icon" placeholder="Password" required autocomplete="current-password" />
+              </div>
+              <button type="submit" class="btn btn-primary btn-ripple auth-submit">
+                <span>Sign In</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+
+            <form id="register-form" class="auth-form" hidden role="tabpanel">
+              <div class="input-group input-group--icon">
+                <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
+                <input type="text" id="register-name" class="form-input form-input--icon" placeholder="Full name" required autocomplete="name" />
+              </div>
+              <div class="input-group input-group--icon">
+                <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
+                <input type="email" id="register-email" class="form-input form-input--icon" placeholder="Email address" required autocomplete="email" />
+              </div>
+              <div class="input-group input-group--icon">
+                <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+                <input type="password" id="register-password" class="form-input form-input--icon" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password" />
+              </div>
+              <button type="submit" class="btn btn-primary btn-ripple auth-submit">
+                <span>Create Account</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- App Wrapper (authenticated) -->
+  <div class="app-wrapper" id="authenticated-shell" hidden>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+      <div class="header-brand">
+        <button class="logo-icon" id="btn-open-sidebar" type="button" aria-label="Open menu">
+          <i class="fa-solid fa-bolt"></i>
+        </button>
+        <div class="brand-text">
+          <h1 class="brand-title">ExpenseIQ</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btn-toggle-theme" title="Toggle Theme" aria-label="Toggle dark/light theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== HOME VIEW ===== -->
+    <div id="view-home" class="app-view app-view-active">
+
+    <!-- ===== HERO STATS ===== -->
+    <section class="stats-hero" aria-label="Primary statistic">
+      <div class="hero-card" id="stat-total">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <span class="hero-label">Total Expenses</span>
+          <span class="hero-value" id="stat-total-value">₹0.00</span>
+        </div>
+      </div>
+      
+      <div class="stats-secondary-grid">
+        <div class="stat-card" id="stat-count">
+          <div class="stat-icon-wrap"><i class="fa-solid fa-receipt"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Transactions</span>
+            <span class="stat-value" id="stat-count-value">0</span>
+          </div>
+        </div>
+        <div class="stat-card" id="stat-highest">
+          <div class="stat-icon-wrap"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Highest Expense</span>
+            <span class="stat-value" id="stat-highest-value">₹0.00</span>
+          </div>
+        </div>
+        <div class="stat-card" id="stat-avg">
+          <div class="stat-icon-wrap"><i class="fa-solid fa-calculator"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Average Expense</span>
+            <span class="stat-value" id="stat-avg-value">₹0.00</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== METRICS GRID (Budget, Top Category, AI Insights) ===== -->
+    <section class="metrics-grid" aria-label="Dashboard metrics">
+      <!-- Budget Tracking Card -->
+      <div class="card metrics-card" id="budget-card">
+        <div class="card-header">
+          <h2 class="card-title">Budget Tracker</h2>
+          <button class="btn-icon btn-icon--sm" id="btn-edit-budget" title="Edit monthly budget" aria-label="Edit budget">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+        </div>
+        <div class="budget-body">
+          <div class="budget-row">
+            <span class="budget-label">Monthly Budget</span>
+            <span class="budget-value" id="budget-total-value">₹0.00</span>
+          </div>
+          <div class="budget-progress-wrapper">
+            <div class="budget-progress-bar">
+              <div class="budget-progress-fill" id="budget-progress-fill" style="width: 0%"></div>
+            </div>
+            <span class="budget-percentage" id="budget-percentage">0%</span>
+          </div>
+          <div class="budget-row">
+            <span class="budget-label">Spent</span>
+            <span class="budget-value budget-value--spent" id="budget-spent-value">₹0.00</span>
+          </div>
+          <div class="budget-row">
+            <span class="budget-label">Remaining</span>
+            <span class="budget-value budget-value--remaining" id="budget-remaining-value">₹0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Spending Category Card -->
+      <div class="card metrics-card" id="top-category-card">
+        <div class="card-header">
+          <h2 class="card-title">Top Category</h2>
+        </div>
+        <div class="top-category-body" id="top-category-body">
+          <div class="top-cat-empty">
+            <span>No data yet</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights Card -->
+      <div class="card metrics-card" id="insights-card">
+        <div class="card-header">
+          <h2 class="card-title">AI Insights</h2>
+        </div>
+        <div class="insights-body" id="insights-body">
+          <div class="insight-item">
+            <span>Add expenses to unlock insights.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CHARTS ROW ===== -->
+    <div class="charts-row">
+      <div class="card chart-card">
+        <div class="card-header">
+          <h2 class="card-title">Monthly Overview</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chart-monthly" aria-label="Monthly expense bar chart"></canvas>
+        </div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-header">
+          <h2 class="card-title">By Category</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chart-category" aria-label="Category breakdown pie chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD SECONDARY GRID ===== -->
+    <div class="dashboard-secondary-grid">
+
+      <!-- Expense List (Left Column) -->
+      <section class="card list-card" aria-label="Expense list">
+        <div class="card-header">
+          <h2 class="card-title">Transactions</h2>
+          <div class="card-header-actions">
+            <button id="btn-delete-selected" class="btn btn-outline btn-sm btn-delete-selected" type="button" disabled hidden>
+              <i class="fa-solid fa-trash"></i> Delete Selected
+            </button>
+            <span class="expense-count-badge" id="expense-count-badge">0 items</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="list-controls">
+          <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search expenses..." autocomplete="off" />
+          </div>
+          <div class="filter-sort-row">
+            <!-- Date Range Filter -->
+            <select id="date-range-filter" class="filter-select" aria-label="Filter by date range">
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="custom">Custom</option>
+            </select>
+            <div class="date-range-inline">
+              <label class="date-range-label" for="date-range-start">From</label>
+              <input type="date" id="date-range-start" class="filter-select filter-date" aria-label="From date" />
+              <label class="date-range-label" for="date-range-end">To</label>
+              <input type="date" id="date-range-end" class="filter-select filter-date" aria-label="To date" />
+              <button type="button" class="btn-icon btn-icon--sm" id="btn-clear-range" title="Clear dates" aria-label="Clear dates" hidden>
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <select id="filter-category" class="filter-select" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <option value="Food">Food & Dining</option>
+              <option value="Transport">Transport</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Health">Health</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Education">Education</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="sort-select" class="filter-select" aria-label="Sort expenses">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="amount-desc">Highest Amount</option>
+              <option value="amount-asc">Lowest Amount</option>
+              <option value="name-asc">Name A–Z</option>
+            </select>
+
+            <div class="filter-sort-actions">
+              <button id="btn-open-add-expense" class="btn btn-primary btn-ripple" type="button" title="Add expense">
+                +Add
+              </button>
+
+              <!-- Export Dropdown -->
+              <div class="export-dropdown-wrapper" id="export-dropdown-wrapper">
+                <button id="btn-export" class="btn btn-outline btn-ripple" title="Export expenses">
+                  <i class="fa-solid fa-download"></i> Export
+                  <i class="fa-solid fa-chevron-down" style="font-size: 0.6rem; margin-left: 2px;"></i>
+                </button>
+                <div class="export-dropdown" id="export-dropdown">
+                  <button class="export-option" id="export-csv" type="button"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                  <button class="export-option" id="export-excel" type="button"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                  <button class="export-option" id="export-pdf" type="button"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                </div>
+              </div>
+
+              <button id="btn-import" class="btn btn-outline btn-ripple" type="button" title="Import transactions from a UPI statement PDF">
+                <i class="fa-solid fa-file-import"></i> Import
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper" id="table-wrapper">
+          <!-- Empty state -->
+          <div class="empty-state" id="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-receipt"></i></div>
+            <h3 class="empty-title">No expenses yet</h3>
+            <p class="empty-subtitle">Use the +Add button above to start tracking your spending.</p>
+          </div>
+          <table class="expense-table" id="expense-table" aria-label="Expense records">
+            <thead>
+              <tr>
+                <th class="col-checkbox">
+                  <input type="checkbox" id="select-all-expenses" class="expense-checkbox" aria-label="Select all transactions" title="Select all" />
+                </th>
+                <th>#</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Currency</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="expense-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Income List -->
+      <section class="card list-card income-card" aria-label="Income list">
+        <div class="card-header">
+          <div class="income-title">
+            <h2 class="card-title">Income</h2>
+            <span class="income-subtitle">Money received, from imported UPI statements</span>
+          </div>
+          <div class="card-header-actions">
+            <span class="income-total" id="income-total">+₹0.00</span>
+            <span class="expense-count-badge" id="income-count-badge">0 items</span>
+          </div>
+        </div>
+
+        <div class="list-controls">
+          <div class="filter-sort-row">
+            <div class="search-wrapper income-search">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="income-search" class="search-input" placeholder="Search by sender..." autocomplete="off" />
+            </div>
+            <div class="date-range-inline">
+              <label class="date-range-label" for="income-date-start">From</label>
+              <input type="date" id="income-date-start" class="filter-select filter-date" aria-label="Income from date" />
+              <label class="date-range-label" for="income-date-end">To</label>
+              <input type="date" id="income-date-end" class="filter-select filter-date" aria-label="Income to date" />
+              <button type="button" class="btn-icon btn-icon--sm" id="btn-clear-income-range" title="Clear dates" aria-label="Clear dates" hidden>
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <div class="empty-state" id="income-empty-state">
+            <div class="empty-state-icon empty-state-icon--income"><i class="fa-solid fa-arrow-down"></i></div>
+            <h3 class="empty-title" id="income-empty-title">No income yet</h3>
+            <p class="empty-subtitle" id="income-empty-subtitle">Use Import to read a UPI statement — money you received is saved here automatically.</p>
+          </div>
+          <table class="expense-table" id="income-table" aria-label="Income records">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Received From</th>
+                <th>Via</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="income-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    </div><!-- /view-home -->
+
+    <!-- ===== PROFILE VIEW ===== -->
+    <div id="view-profile" class="app-view">
+      <section class="card page-card">
+        <div class="card-header">
+          <h2 class="card-title">Profile</h2>
+        </div>
+        <div class="profile-body">
+          <div class="profile-avatar-large" id="profile-avatar">?</div>
+          <div class="profile-details" id="profile-details">
+            <div class="profile-field">
+              <span class="profile-label">Full Name</span>
+              <span class="profile-value" id="profile-name-display">—</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Email</span>
+              <span class="profile-value" id="profile-email-display">—</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Member Since</span>
+              <span class="profile-value" id="profile-created-display">—</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Currency</span>
+              <span class="profile-value" id="profile-currency-display">—</span>
+            </div>
+          </div>
+          <form id="profile-edit-form" class="profile-edit-form">
+            <h3 class="profile-section-title">Edit Profile</h3>
+            <div class="input-group">
+              <input type="text" id="profile-name-input" class="form-input" placeholder="Full name" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-ripple">Save Changes</button>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== AUDIT LOG VIEW ===== -->
+    <div id="view-audit" class="app-view">
+      <section class="card page-card list-card">
+
+        <!-- Header row -->
+        <div class="card-header audit-card-header">
+          <div class="audit-header-left">
+            <h2 class="card-title">Audit Log</h2>
+            <span class="expense-count-badge" id="audit-count-badge">0 events</span>
+          </div>
+          <div class="audit-header-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="audit-clear-filters" hidden>
+              <i class="fa-solid fa-filter-circle-xmark"></i> Clear
+            </button>
+            <button type="button" class="btn btn-icon" id="audit-refresh-btn" title="Refresh" aria-label="Refresh">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="audit-export-btn">
+              <i class="fa-solid fa-download"></i> Export CSV
+            </button>
+          </div>
+        </div>
+        <p class="page-subtitle">A full history of your account activity and changes.</p>
+
+        <!-- Search bar -->
+        <div class="audit-toolbar" id="audit-toolbar" hidden>
+          <div class="audit-search-row">
+            <div class="audit-search-wrap">
+              <i class="fa-solid fa-magnifying-glass audit-search-icon"></i>
+              <input type="search" id="audit-search-input" class="audit-search-field"
+                     placeholder="Search events, actions, summaries…" autocomplete="off" aria-label="Search audit log" />
+            </div>
+          </div>
+
+          <!-- Date range row -->
+          <div class="audit-filters-row">
+            <div class="audit-date-range">
+              <span class="audit-date-label">From</span>
+              <input type="date" id="audit-filter-from" class="audit-date-input" aria-label="From date" />
+              <i class="fa-solid fa-arrow-right audit-date-arrow"></i>
+              <span class="audit-date-label">To</span>
+              <input type="date" id="audit-filter-to" class="audit-date-input" aria-label="To date" />
+            </div>
+            <div class="audit-filter-pills" id="audit-action-pills" aria-label="Filter by action"></div>
+            <div class="audit-filter-pills" id="audit-type-pills" aria-label="Filter by type"></div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper" id="audit-table-wrapper">
+          <div class="empty-state" id="audit-empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <h3 class="empty-title">No activity yet</h3>
+            <p class="empty-subtitle">Your account actions will appear here as you use ExpenseIQ.</p>
+          </div>
+
+          <table class="expense-table audit-table" id="audit-table" hidden>
+            <thead>
+              <tr>
+                <th class="audit-th-sort" data-sort="when">
+                  <button type="button" class="audit-sort-btn" aria-label="Sort by date">
+                    <span>When</span>
+                    <i class="fa-solid fa-sort-down audit-sort-icon"></i>
+                  </button>
+                </th>
+                <th class="audit-th-sort" data-sort="action">
+                  <button type="button" class="audit-sort-btn" aria-label="Sort by action">
+                    <span>Action</span>
+                    <i class="fa-solid fa-sort audit-sort-icon"></i>
+                  </button>
+                </th>
+                <th class="audit-th-sort" data-sort="type">
+                  <button type="button" class="audit-sort-btn" aria-label="Sort by type">
+                    <span>Type</span>
+                    <i class="fa-solid fa-sort audit-sort-icon"></i>
+                  </button>
+                </th>
+                <th>Summary</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody"></tbody>
+          </table>
+
+          <div class="empty-state" id="audit-no-results" hidden>
+            <div class="empty-state-icon"><i class="fa-solid fa-filter"></i></div>
+            <h3 class="empty-title">No matching events</h3>
+            <p class="empty-subtitle">Try adjusting your search or filters.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div><!-- /app-wrapper -->
+
+  <!-- ===== ADD EXPENSE MODAL ===== -->
+  <div id="add-expense-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+    <div class="modal-card modal-card--wide">
+      <div class="modal-header">
+        <h3 id="add-modal-title">Add Expense</h3>
+        <button id="add-modal-close" class="btn-icon" aria-label="Close modal" type="button"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="form-grid">
+        <div class="input-group">
+          <input type="text" id="expense-description" class="form-input" placeholder="Expense description" autocomplete="off" />
+        </div>
+        <div class="input-group amount-input-group">
+          <span class="amount-currency-prefix" id="amount-currency-prefix">₹</span>
+          <input type="number" id="expense-amount" class="form-input form-input--amount" placeholder="Amount *" min="0.01" step="0.01" required aria-required="true" />
+        </div>
+        <div class="input-group">
+          <select id="expense-category" class="form-input form-select">
+            <option value="">Select Category</option>
+            <option value="Food">Food & Dining</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <input type="date" id="expense-date" class="form-input form-input--date" title="Date (required)" required aria-required="true" />
+        </div>
+      </div>
+
+      <div class="quick-chips" id="quick-chips">
+        <button class="chip" data-cat="Food" type="button">Food</button>
+        <button class="chip" data-cat="Transport" type="button">Travel</button>
+        <button class="chip" data-cat="Health" type="button">Health</button>
+        <button class="chip" data-cat="Education" type="button">Education</button>
+        <button class="chip" data-cat="Shopping" type="button">Shopping</button>
+      </div>
+
+      <div class="form-actions">
+        <button id="btn-add-expense" class="btn btn-primary btn-ripple" type="button">
+          <span>Add Expense</span>
+        </button>
+        <button id="btn-clear-form" class="btn btn-ghost btn-ripple" type="button">
+          <span>Clear</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDIT MODAL ===== -->
+  <div id="edit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Edit Expense</h3>
+        <button id="modal-close" class="btn-icon" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="form-grid">
+        <div class="input-group">
+          <input type="text" id="modal-description" class="form-input" placeholder="Description" />
+        </div>
+        <div class="input-group amount-input-group">
+          <span class="amount-currency-prefix" id="modal-currency-prefix">₹</span>
+          <input type="number" id="modal-amount" class="form-input form-input--amount" placeholder="Amount" min="0" step="0.01" />
+        </div>
+        <div class="input-group">
+          <select id="modal-category" class="form-input form-select">
+            <option value="">Select Category</option>
+            <option value="Food">Food & Dining</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <input type="date" id="modal-date" class="form-input form-input--date" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button id="modal-save" class="btn btn-primary btn-ripple">Save Changes</button>
+        <button id="modal-cancel" class="btn btn-ghost btn-ripple">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BUDGET EDIT MODAL ===== -->
+  <div id="budget-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="budget-modal-title">
+    <div class="modal-card modal-card--sm">
+      <div class="modal-header">
+        <h3 id="budget-modal-title">Set Monthly Budget</h3>
+        <button id="budget-modal-close" class="btn-icon" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="budget-modal-body">
+        <div class="input-group amount-input-group">
+          <span class="amount-currency-prefix" id="budget-modal-prefix">₹</span>
+          <input type="number" id="budget-modal-amount" class="form-input form-input--amount" placeholder="Enter monthly budget" min="0" step="100" />
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top:20px;">
+        <button id="budget-modal-save" class="btn btn-primary btn-ripple">Save Budget</button>
+        <button id="budget-modal-cancel" class="btn btn-ghost btn-ripple">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== IMPORT STATEMENT MODAL ===== -->
+  <div id="import-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+    <div class="modal-card import-card">
+      <div class="modal-header import-header">
+        <div class="import-header-text">
+          <h3 id="import-modal-title">Import UPI Statement</h3>
+          <p class="import-subtitle" id="import-subtitle">Choose the app your statement PDF was downloaded from.</p>
+        </div>
+        <button id="import-modal-close" class="btn-icon" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Step: choose app -->
+      <section class="import-step" data-step="choose">
+        <div class="upi-app-grid">
+          <button type="button" class="upi-app-tile" data-source="bhim">
+            <span class="upi-logo upi-logo--bhim" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#fff"/><path d="M22 12 L33 23 L22 34 Z" fill="#F47920"/><path d="M30 12 L41 23 L30 34 Z" fill="#0E8A3E"/><text x="32" y="51" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="800" fill="#1B2A5E">BHIM</text></svg>
+            </span>
+            <span class="upi-app-name">BHIM UPI</span>
+          </button>
+          <button type="button" class="upi-app-tile" data-source="gpay">
+            <span class="upi-logo upi-logo--gpay" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#fff"/><g transform="translate(16 16) scale(0.6667)"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></g></svg>
+            </span>
+            <span class="upi-app-name">Google Pay</span>
+          </button>
+          <button type="button" class="upi-app-tile" data-source="phonepe">
+            <span class="upi-logo upi-logo--phonepe" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#5F259F"/><text x="32" y="43" text-anchor="middle" font-family="'Nirmala UI','Mangal','Noto Sans Devanagari',sans-serif" font-size="30" font-weight="700" fill="#fff">पे</text></svg>
+            </span>
+            <span class="upi-app-name">PhonePe</span>
+          </button>
+          <button type="button" class="upi-app-tile" data-source="paytm">
+            <span class="upi-logo upi-logo--paytm" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#fff"/><text x="32" y="39" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="800" letter-spacing="-0.5"><tspan fill="#002E6E">pay</tspan><tspan fill="#00BAF2">tm</tspan></text></svg>
+            </span>
+            <span class="upi-app-name">Paytm</span>
+          </button>
+        </div>
+        <div class="import-privacy">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <strong>Your PDF never leaves this device.</strong>
+            It is read inside your browser — no AI model or third-party service sees it. Only the date, payee, amount and category of the payments you approve are saved. Account numbers, UPI IDs, phone numbers and reference numbers are discarded; references are kept only as one-way fingerprints to block duplicates.
+          </div>
+        </div>
+        <input type="file" id="import-file-input" accept="application/pdf,.pdf" hidden />
+      </section>
+
+      <!-- Step: working -->
+      <section class="import-step" data-step="working" hidden>
+        <div class="import-working">
+          <div class="loader-ring"></div>
+          <p id="import-working-text">Reading statement…</p>
+          <span><i class="fa-solid fa-lock"></i> Processing locally on your device</span>
+        </div>
+      </section>
+
+      <!-- Step: password -->
+      <section class="import-step" data-step="password" hidden>
+        <form id="import-password-form" class="import-password" autocomplete="off">
+          <p>This statement is password-protected. The password is used only in this browser to open the file — it is never saved or sent anywhere.</p>
+          <input type="password" id="import-password-input" class="form-input" placeholder="PDF password" autocomplete="off" />
+          <p class="import-error" id="import-password-error" hidden><i class="fa-solid fa-circle-exclamation"></i> Incorrect password. Please try again.</p>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-unlock"></i> Unlock</button>
+            <button type="button" class="btn btn-ghost" data-import-back>Back</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Step: message -->
+      <section class="import-step" data-step="message" hidden>
+        <div class="import-message">
+          <div class="import-message-icon" id="import-message-icon"></div>
+          <h4 id="import-message-title"></h4>
+          <p id="import-message-text"></p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" id="import-message-primary" hidden></button>
+            <button type="button" class="btn btn-outline" data-import-back>Choose another file</button>
+            <button type="button" class="btn btn-ghost" data-import-close>Close</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step: review -->
+      <section class="import-step" data-step="review" hidden>
+        <div id="import-summary" class="import-summary"></div>
+        <div class="import-table-wrap">
+          <table class="expense-table import-table">
+            <thead>
+              <tr>
+                <th class="col-checkbox"><input type="checkbox" id="import-select-all" class="expense-checkbox" aria-label="Select all" /></th>
+                <th>Date</th>
+                <th>Payee</th>
+                <th>Category</th>
+                <th class="import-amount">Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="import-tbody"></tbody>
+          </table>
+        </div>
+        <div class="import-footer">
+          <p class="import-footer-text" id="import-footer-text"></p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" data-import-close>Not now</button>
+            <button type="button" class="btn btn-primary btn-ripple" id="import-confirm-btn">Import</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="script.js?v=5"></script>
+  <script src="importer.js?v=5"></script>
+</body>
+
+</html>
